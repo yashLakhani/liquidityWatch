@@ -1,25 +1,15 @@
-from instance.config import API_KEYS
-import quandl
-import requests
+from sqlalchemy import create_engine
+from instance.config import DB_URL
+import app.dataManipulation as dataManipulation
 import pandas as pd
-import numpy as np
 import requests, zipfile, io
-import psycopg2
-
-pd.set_option('display.max_columns', None)
-pd.set_option('max_rows',3000)
-pd.set_option('max_colwidth', 200)
-pd.set_option('display.max_columns', 150)
-pd.set_option('display.width', 1000)
-
-quandl.ApiConfig.api_key = API_KEYS['QUANDL_API_KEY']
 
 
 def download_metadata(dataset_name):
     req = 'https://www.quandl.com/api/v3/databases/{}/metadata'.format(dataset_name)
     r = requests.get(req)
     z = zipfile.ZipFile(io.BytesIO(r.content))
-    z.extractall()
+    z.extractall('data')
 
 
 def load_instruments(filename):
@@ -28,18 +18,15 @@ def load_instruments(filename):
     instrument_df["exchange"] = instrument_details[0]
     instrument_df["code"] = instrument_details[1]
     instrument_df.drop(columns=["description"], inplace=True)
-    print(instrument_df.head())
     return instrument_df
-    #df.to_sql('', engine)
 
 
+def run(dataset_name, filename):
+    download_metadata(dataset_name)
+    instruments_df = load_instruments(filename)
+    engine = create_engine(DB_URL)
+    instruments_df.to_sql('instrument', engine, if_exists='replace', method=dataManipulation.psql_insert_copy)
 
 
-download_metadata('CHRIS')
-instruments_df = load_instruments('CHRIS_metadata.csv')
-
-from sqlalchemy import create_engine
-from dataManipulation import psql_insert_copy
-
-engine = create_engine('postgresql://localhost/wikidb')
-instruments_df.to_sql('instrument', engine, method=psql_insert_copy)
+if __name__ == "__main__":
+    run('CHRIS', 'data\CHRIS_metadata.csv')

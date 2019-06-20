@@ -1,15 +1,12 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from instance.config import  DB_URL
 
 app = Flask(__name__)
-#DB_URL = 'postgresql+psycopg2://{user}:{pw}@{url}/{db}'.format(user=POSTGRES_USER,pw=POSTGRES_PW,url=POSTGRES_URL,db=POSTGRES_DB)
-#app.config['SQLALCHEMY_DATABASE_URI'] =
-DB_URL = 'postgresql://localhost/wikidb'
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URL
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # silence the deprecation warning
-
-
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
 
 class Instrument(db.Model):
     __tablename__ = "instrument"
@@ -29,11 +26,12 @@ class Instrument(db.Model):
         self.to_date = to_date
         self.exchange = exchange
 
-
     def __repr__(self):
         return '<Instrument %r>' % self.code
 
-'''
-db.create_all()
-db.session.commit()
-'''
+
+if __name__ == "__main__":
+    db.create_all()
+    db.session.commit()
+
+

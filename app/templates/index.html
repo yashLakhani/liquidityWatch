@@ -23,34 +23,40 @@
 </head>
 	<div class=container>
   			<h1>Liquidity Watch</h1>
-  			<div class=metanav>
-				<select name="instruments" method="GET" action="/">
-					{% for instrument in ins_list %}
-						<option value="{{instrument}}" SELECTED>{{instrument}}</option>"
-					{% endfor %}
-				</select><br><br>
-				<form action="/action_page.php">
-				  Start Date:
-				  <input type="date" name="start_date">
-				</form><br>
-				<form action="/action_page.php">
-				  End Date:
-				  <input type="date" name="end_date">
-				</form><br>
-	  				<input type="checkbox" name='feat1' value='Open'>Opening price<br>
-					<input type="checkbox" name='feat2' value='Close'>Closing price<br>
-					<input type="checkbox" name='feat3' value='Range'>Range (High/Low)<br>
-	  			</p>
 	  			<p>
-	    			<input type="submit" value="Submit">
-	  			</p>
-				</form>
 
-  			</div>
+	  			</p>
+				{% block content %}
+					<h4>Select Your Commodity Contract</h4>
+					<form action="" method="post" novalidate>
+						{{ form.hidden_tag() }}
+						<p>
+							Start Date:
+							{{ form.start_dt(class='datepicker') }}
+							End Date:
+							{{ form.end_dt(class='datepicker') }}
+						</p>
+
+						<p>
+						{{ form.instrument }}
+						</p>
+						<p>
+						{{ form.vwap_checkbox }}
+						{{ form.vwap_checkbox.label }}<br>
+						{{ form.adv_checkbox }}
+						{{ form.adv_checkbox.label }}<br>
+						{{ form.oi_checkbox }}
+						{{ form.oi_checkbox.label }}<br>
+						</p>
+
+						<p>{{ form.submit() }}</p><br>
+					</form>
+				{% endblock %}
+
   			<div align="left">
   			<p><i>See <a href="https://www.quandl.com/data/CHRIS" target="_blank">www.quandl.com/data/CHRIS</a></i> for database description</p>
   			</div>
-		</div>
+	</div>
 	</body>
 <div class="container">
     <hr>
