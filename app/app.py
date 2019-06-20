@@ -145,13 +145,26 @@ def graph():
     selected_column = get_best_column('Price', df.columns)
     print(selected_column)
     if selected_column:
-        p = figure(plot_width=450, plot_height=450, title=app.vars['instrument'], x_axis_type="datetime")
+        bk_mc_prices = figure(plot_width=450, plot_height=450, title=app.vars['instrument'], x_axis_type="datetime")
         tmpx = np.array([df.Date, df.Date[::-1]]).flatten()
         tmpy = np.array([df[selected_column], df[selected_column][::-1]]).flatten()
-        p.patch(tmpx, tmpy, alpha=0.3, color="gray", legend='Range (High/Low)')
+        bk_mc_prices.patch(tmpx, tmpy, alpha=0.3, color="gray", legend='Range (High/Low)')
+        bk_mc_price_script, bk_mc_price_div = components(bk_mc_prices)
 
+    selected_column = get_best_column('Volume', df.columns)
+    print(selected_column)
+    if selected_column:
+        tmpx_vol = np.array([df.Date, df.Date[::-1]]).flatten()
+        tmpy_vol = np.array([df[selected_column], df[selected_column][::-1]]).flatten()
     else:
-        raise ValueError('No Appropriate Columns Found')
+        tmpx_vol = np.array([0])
+        tmpy_vol = np.array([0])
+
+    bk_mc_vol = figure(plot_width=450, plot_height=450, title=app.vars['instrument'], x_axis_type="datetime")
+    bk_mc_vol.patch(tmpx_vol, tmpy_vol, alpha=0.3, color="gray", legend='Range (High/Low)')
+    bk_mc_volume_script, bk_mc_volume_div = components(bk_mc_vol)
+
+
     '''    
     req = 'https://www.quandl.com/api/v3/datasets/CHRIS/'
     req = '%s%s.json?&collapse=weekly' % (req, app.vars['instrument'])
@@ -186,6 +199,7 @@ def graph():
     #p.legend.orientation = "top_left"
     '''
     # axis labels
+    '''
     p.xaxis.axis_label = "Date"
     p.xaxis.axis_label_text_font_style = 'bold'
     p.xaxis.axis_label_text_font_size = '16pt'
@@ -196,13 +210,14 @@ def graph():
     p.yaxis.axis_label_text_font_style = 'bold'
     p.yaxis.axis_label_text_font_size = '16pt'
     p.yaxis.major_label_text_font_size = '12pt'
-
+    '''
     # render graph template
     # ------------------- ------------------------|
-    script, div = components(p)
+    #script, div = components(p)
     #                           ttag=app.vars['desc'], yrtag=app.vars['tag'],
     return render_template('graph.html', bv=bv, ticker=app.vars['instrument'],
-                           script=script, div=div)
+                           price_script=bk_mc_price_script, price_div=bk_mc_price_div,
+                           vol_script=bk_mc_volume_script, vol_div=bk_mc_volume_div)
 
 
 @app.errorhandler(500)
