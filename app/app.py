@@ -1,8 +1,8 @@
 from flask import Flask, Response, render_template, redirect, request
 
-from datamodels import app
-from inputforms import InstrumentSelectionForm
-from bokehgraph import bokeh_version, create_single_line_graph
+from models import app
+from forms import InstrumentSelectionForm
+from graph import bokeh_version, create_single_line_graph
 from liquiditywatch import (get_best_column,
                            calculate_volume_weighted_average_price,
                            calculate_daily_volatility)
@@ -33,35 +33,32 @@ def instrument_selection():
 def graph():
     import quandl
 
-
-    df = quandl.get("CHRIS/{}".format(app.vars['instrument']),
+    if app.vars['instrument']:
+            df = quandl.get("CHRIS/{}".format(app.vars['instrument']),
                     start_date=app.vars['start_dt'],
                     end_date=app.vars['end_dt'])
 
-    df['Date'] = df.index.to_series()
+            df['Date'] = df.index.to_series()
+            selected_column = get_best_column('Price', df.columns)
+            df = calculate_volume_weighted_average_price(df, selected_column)
 
-    print(df)
-    selected_column = get_best_column('Price', df.columns)
-    df = calculate_volume_weighted_average_price(df, selected_column)
+            bk_mc_price_script, bk_mc_price_div = create_single_line_graph(df, selected_column,
+                                                                           width=1000, height=450,
+                                                                           color="red",
+                                                                           legend='Price')
 
-    print(df)
-    print(selected_column)
-    bk_mc_price_script, bk_mc_price_div = create_single_line_graph(df, selected_column,
-                                                                   width=1000, height=450,
-                                                                   color="red",
-                                                                   legend='Price')
+            selected_column = get_best_column('Volume', df.columns)
+            bk_mc_volume_script, bk_mc_volume_div = create_single_line_graph(df, selected_column,
+                                                                             width=1000, height=250,
+                                                                             color="blue",
+                                                                             legend='Volume')
 
-    selected_column = get_best_column('Volume', df.columns)
-    bk_mc_volume_script, bk_mc_volume_div = create_single_line_graph(df, selected_column,
-                                                                     width=1000, height=250,
-                                                                     color="blue",
-                                                                     legend='Volume')
+            return render_template('graph.html', ticker=app.vars['instrument'], bv=bokeh_version,
+                                   price_script=bk_mc_price_script, price_div=bk_mc_price_div,
+                                   vol_script=bk_mc_volume_script, vol_div=bk_mc_volume_div)
 
-    return render_template('graph.html', ticker=app.vars['instrument'], bv=bokeh_version,
-                           price_script=bk_mc_price_script, price_div=bk_mc_price_div,
-                           vol_script=bk_mc_volume_script, vol_div=bk_mc_volume_div)
 
-    #return render_template('error.html', ticker=app.vars['ticker'], year=app.vars['start_year'])
+    return render_template('error.html', ticker=app.vars['ticker'], year=app.vars['start_year'])
 
 
 @app.errorhandler(500)
