@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from instance.config import DB_URL
-import app.dataManipulation as dataManipulation
+import app.pghelper as pghelper
 import pandas as pd
 import requests, zipfile, io
 
@@ -25,7 +25,7 @@ def run(dataset_name, filename):
     download_metadata(dataset_name)
     instruments_df = load_instruments(filename)
     engine = create_engine(DB_URL)
-    instruments_df.to_sql('instrument', engine, if_exists='replace', method=dataManipulation.psql_insert_copy)
+    instruments_df.to_sql('instrument', engine, if_exists='replace', method=pghelper.psql_insert_copy)
 
 
 if __name__ == "__main__":
