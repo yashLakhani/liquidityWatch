@@ -1,9 +1,20 @@
 from models import Instrument
 
 
+def summarize_instrument(instrument):
+    instrument_name = instrument.name.split(',')[0]
+    if len(instrument_name) > 50:
+        instrument_name = instrument_name[:50]
+    else:
+        instrument_name = instrument_name
+
+    instrument_summary = '{} ({})'.format(instrument_name, instrument.code)
+    return instrument_summary
+
+
 def get_all_instruments():
     instruments = Instrument.query.all()
-    return [(i.exchange + '_' + i.code, i.name) for i in instruments]
+    return [(i.exchange + '_' + i.code, summarize_instrument(i)) for i in instruments]
 
 
 def get_instrument_name(code):

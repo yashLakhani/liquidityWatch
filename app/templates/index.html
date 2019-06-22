@@ -10,15 +10,15 @@
 
 	<div class=container>
 		<form action="" method="post" novalidate>
+			<p>
+			{{ form.instrument(size=10) }}
+			</p>
 			{{ form.hidden_tag() }}
 			<p>
 				Start Date:
 				{{ form.start_dt(class='datepicker') }}
 				End Date:
 				{{ form.end_dt(class='datepicker') }}
-			</p>
-			<p>
-			{{ form.instrument }}
 			</p>
 			<p>
 			{{ form.vwap_checkbox }}
