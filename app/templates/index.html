@@ -6,7 +6,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-	<h1>Liquidity Watch <small>Select Your Commodity Contract</small></h1>
+	<h1>Liquidity Watch <br><small>Select Your Commodity Contract</small></h1>
 
 	<div class=container>
 		<form action="" method="post" novalidate>
@@ -25,8 +25,6 @@
 			{{ form.vwap_checkbox.label }}<br>
 			{{ form.adv_checkbox }}
 			{{ form.adv_checkbox.label }}<br>
-			{{ form.oi_checkbox }}
-			{{ form.oi_checkbox.label }}<br>
 			</p>
 
 			<p>{{ form.submit() }}</p><br>

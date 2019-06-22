@@ -2,17 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import BooleanField, SubmitField, SelectField, SelectMultipleField
 from wtforms.fields.html5 import DateField
 from wtforms.widgets import ListWidget, CheckboxInput
-from models import Instrument
-
-
-def get_all_instruments():
-    instruments = Instrument.query.all()
-    return [(i.exchange + '_' + i.code, i.name) for i in instruments]
-
-
-def get_instrument_name(code):
-    return Instrument.query.filter_by(code=code).first()
-
+from queries import get_all_instruments
 
 class MultiCheckboxField(SelectMultipleField):
     widget = ListWidget(prefix_label=False)
@@ -25,5 +15,4 @@ class InstrumentSelectionForm(FlaskForm):
     instrument = SelectField(label='Instrument', choices=get_all_instruments())
     vwap_checkbox = BooleanField('Volume Weighted Average Price')
     adv_checkbox = BooleanField('Average Daily Volume')
-    oi_checkbox = BooleanField('Intraday Open Interest')
     submit = SubmitField('Graph')
