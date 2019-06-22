@@ -2,12 +2,16 @@ from flask_wtf import FlaskForm
 from wtforms import BooleanField, SubmitField, SelectField, SelectMultipleField
 from wtforms.fields.html5 import DateField
 from wtforms.widgets import ListWidget, CheckboxInput
-from datamodels import Instrument
+from models import Instrument
 
 
 def get_all_instruments():
     instruments = Instrument.query.all()
     return [(i.exchange + '_' + i.code, i.name) for i in instruments]
+
+
+def get_instrument_name(code):
+    return Instrument.query.filter_by(code=code).first()
 
 
 class MultiCheckboxField(SelectMultipleField):

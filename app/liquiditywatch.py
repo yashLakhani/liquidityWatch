@@ -31,7 +31,7 @@ def calculate_volume_weighted_average_price(dataframe, price_column):
     return None
 
 
-def calculate_daily_volatility(dataframe, price_column, min_periods = 20):
+def calculate_daily_volatility(dataframe, price_column, min_periods=20):
     daily_pct_change = dataframe[price_column].pct_change()
     daily_volatility = daily_pct_change.rolling(min_periods).std() * np.sqrt(min_periods)
 

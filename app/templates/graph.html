@@ -1,19 +1,24 @@
 <!doctype html>
 <html lang="en">
 	<head>
-		<meta charset="utf-8">
-		<title>Quandl Graph</title>
 	</head>
 	<body>
 {% extends "base.html" %}
 {% block content %}
 	<div class="container">
+		<h1>{{ ins_name }} <br><small>{{ ins_contract }}</small></h1>
 		<div class="row">
-			<div class="col-md-6"><br><br>
+			<div class="col-md-6">
 				{{ price_script|indent(4)|safe }}
 				{{ price_div|indent(4)|safe }}
 			</div>
 		</div>
+		<div class="row">
+			<div class="col-md-6">
+				{{ volume_script|indent(4)|safe }}
+				{{ volume_div|indent(4)|safe }}
+			</div>
+		</div><br><br>
 		<div class="row">
 			<div class="col-md-6">
 				{{ vol_script|indent(4)|safe }}

@@ -2,6 +2,8 @@ import numpy as np
 import bokeh
 from bokeh.plotting import figure
 from bokeh.embed import components
+from bokeh.themes import built_in_themes
+from bokeh.io import curdoc
 
 bokeh_version = bokeh.__version__
 
@@ -9,14 +11,36 @@ bokeh_version = bokeh.__version__
 def create_single_line_graph(dataframe, selected_column, width, height, color, legend):
     tmpx = np.array([0])
     tmpy = np.array([0])
-
     if selected_column:
         tmpx = np.array([dataframe['Date'], dataframe['Date'][::-1]]).flatten()
         tmpy = np.array([dataframe[selected_column], dataframe[selected_column][::-1]]).flatten()
 
-    bk_mc = figure(plot_width=width, plot_height=height, x_axis_type="datetime")
-    bk_mc.patch(tmpx, tmpy, alpha=0.3, color=color, legend=legend)
-    bk_mc_script, bk_mc_div = components(bk_mc)
+    curdoc().theme = 'dark_minimal'
+    plot = figure(plot_width=width, plot_height=height, x_axis_type="datetime")
+    plot.patch(tmpx, tmpy, alpha=0.3, color=color, legend=legend)
+    bk_mc_script, bk_mc_div = components(plot)
+
+    return bk_mc_script, bk_mc_div
+
+
+def create_candle_stick_graph(dataframe, width, height):
+    inc = dataframe['Last'] > dataframe['Open']
+    dec = dataframe['Open'] > dataframe['Last']
+    w = 12 * 60 * 60 * 1000  # half day in ms
+
+    import math
+    curdoc().theme = 'dark_minimal'
+    plot = figure(plot_width=width, plot_height=height, x_axis_type="datetime")
+    plot.xaxis.major_label_orientation = math.pi / 4
+    plot.grid.grid_line_alpha = 0.3
+
+    plot.segment(dataframe['Date'], dataframe['High'], dataframe['Date'], dataframe['Low'], color='black')
+    plot.vbar(dataframe['Date'][inc], w, dataframe['Open'][inc], dataframe['Last'][inc],
+              fill_color="#D5E1DD", line_color="black")
+    plot.vbar(dataframe['Date'][dec], w, dataframe['Open'][dec], dataframe['Last'][dec],
+              fill_color="#F2583E", line_color="black")
+
+    bk_mc_script, bk_mc_div = components(plot)
 
     return bk_mc_script, bk_mc_div
 
