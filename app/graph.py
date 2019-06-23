@@ -11,19 +11,20 @@ from bokeh.models import NumeralTickFormatter
 bokeh_version = bokeh.__version__
 
 
-def initialise_empty_graphs():
+def create_empty_graphs():
     return '', ''
 
 
-def create_line_graph(dataframe, selected_columns, width, height, colors, format=False):
+def create_line_graph(dataframe, width, height, colors, selected_columns, plotVWAP=False, plotADV=False, format=False):
     curdoc().theme = 'dark_minimal'
     plot = figure(plot_width=width, plot_height=height, x_axis_type="datetime")
 
-    for color, column in zip(colors, selected_columns):
+    if plotVWAP:
+        selected_columns += ['VWAP']
+    if plotADV:
+        selected_columns += ['ADV']
 
-        if not column:
-            tmpx = np.array([0])
-            tmpy = np.array([0])
+    for color, column in zip(colors, selected_columns):
 
         tmpx = np.array([dataframe['Date'], dataframe['Date'][::-1]]).flatten()
         tmpy = np.array([dataframe[column], dataframe[column][::-1]]).flatten()
@@ -56,3 +57,25 @@ def create_candle_stick_graph(dataframe, width, height):
     bk_mc_script, bk_mc_div = components(plot)
 
     return bk_mc_script, bk_mc_div
+
+
+def generate_volatility_graph(dataframe, selected_price_column, selected_columns):
+    if selected_price_column:
+        return create_line_graph(dataframe, width=1000, height=250, colors=["limegreen"],
+                                 selected_columns=['Volatility'])
+    return create_empty_graphs()
+
+
+def generate_price_graph(dataframe, selected_price_column, selected_columns, plotVWAP):
+    if selected_price_column:
+        return create_line_graph(dataframe, width=1000, height=400,
+                                 colors=['orange', 'skyblue'], selected_columns=selected_columns,
+                                 plotVWAP=plotVWAP)
+    return create_empty_graphs()
+
+
+def generate_volume_graph(dataframe, selected_volume_column, selected_columns, plotADV):
+    if selected_volume_column:
+        return create_line_graph(dataframe, width=1000, height=250, colors=["grey", 'yellow'],
+                                 selected_columns=selected_columns, plotADV=plotADV, format=True)
+    return create_empty_graphs()

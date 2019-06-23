@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from instance.config import DB_URL
-import app.pghelper as pghelper
+import app.pg_helper as pghelper
 import pandas as pd
 import requests, zipfile, io
 

@@ -19,6 +19,3 @@ def psql_insert_copy(table, conn, keys, data_iter):
         sql = 'COPY {} ({}) FROM STDIN WITH CSV'.format(
             table_name, columns)
         cur.copy_expert(sql=sql, file=s_buf)
-
-
-

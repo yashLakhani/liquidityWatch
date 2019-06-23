@@ -5,14 +5,15 @@ from forms import InstrumentSelectionForm
 from graph import (bokeh_version,
                    create_line_graph,
                    create_candle_stick_graph,
-                   initialise_empty_graphs)
+                   generate_volatility_graph,
+                   generate_price_graph,
+                   generate_volume_graph)
 from queries import (get_instrument_name,
                      get_instrument_details,
                      split_instrument_code)
-from liquiditywatch import (get_best_column,
-                           calculate_volume_weighted_average_price,
-                           calculate_daily_volatility,
-                           calculate_average_daily_volume)
+from quandl_provider import (get_best_column,
+                             fetch_market_data)
+from metric_calculator import calculate_metrics
 
 app.secret_key = 'XOYO!'
 app.config['BOOTSTRAP_SERVE_LOCAL'] = True
@@ -31,71 +32,57 @@ def instrument_selection():
     if request.method == 'GET':
         return render_template("index.html", form=form)
     else:
-        app.vars['start_dt'] = form.start_dt.data
-        app.vars['end_dt'] = form.end_dt.data
-        app.vars['ins_code'] = form.instrument.data
-        app.vars['ins_name'] = get_instrument_name(split_instrument_code(app.vars['ins_code'])).name
-        app.vars['VWAP_selected'] = form.vwap_checkbox.data
-        app.vars['ADV_selected'] = form.adv_checkbox.data
+        populate_form_data(form)
         return redirect('/graph')
 
 
 @app.route('/graph', methods=['GET', 'POST'])
 def graph():
-    import quandl
+    df = fetch_market_data(app.vars)
+    selected_price_column = get_best_column('Price', df.columns)
+    selected_volume_column = get_best_column('Volume', df.columns)
+    price_col_to_plot = [selected_price_column]
+    volume_col_to_plot = [selected_volume_column]
 
-    bk_mc_price_script, bk_mc_price_div = initialise_empty_graphs()
-    bk_mc_volume_script, bk_mc_volume_div = initialise_empty_graphs()
-    bk_mc_volatility_script, bk_mc_volatility_div = initialise_empty_graphs()
+    df = calculate_metrics(df, app.vars['plotVWAP'],  app.vars['plotADV'],
+                            selected_price_column, selected_volume_column)
 
-    if app.vars['ins_code']:
-            df = quandl.get("CHRIS/{}".format(app.vars['ins_code']),
-                    start_date=app.vars['start_dt'],
-                    end_date=app.vars['end_dt'])
+    if 'VWAP' in df.columns:
+        price_col_to_plot += ['VWAP']
 
-            selected_price_column = get_best_column('Price', df.columns)
-            selected_volume_column = get_best_column('Volume', df.columns)
-            price_columns_to_plot = [selected_price_column]
-            volume_columns_to_plot = [selected_volume_column]
+    if 'ADV' in df.columns:
+        volume_col_to_plot += ['ADV']
 
-            df['Date'] = df.index.to_series()
-            df['Volatility'] = calculate_daily_volatility(df, selected_price_column)
+    bk_mc_price_script, bk_mc_price_div = generate_price_graph(df, selected_price_column,
+                                                               price_col_to_plot,
+                                                               plotVWAP=app.vars['plotVWAP'])
+    bk_mc_volatility_script, bk_mc_volatility_div = generate_volatility_graph(df, selected_price_column,
+                                                                              price_col_to_plot)
+    bk_mc_volume_script, bk_mc_volume_div = generate_volume_graph(df, selected_volume_column,
+                                                                  volume_col_to_plot,
+                                                                  plotADV=app.vars['plotADV'])
 
-            if app.vars['VWAP_selected'] and selected_price_column:
-                df['VWAP'] = calculate_volume_weighted_average_price(df, selected_price_column)
-                price_columns_to_plot += ['VWAP']
-            if app.vars['ADV_selected'] and selected_volume_column:
-                df['ADV'] = calculate_average_daily_volume(df, selected_volume_column)
-                volume_columns_to_plot += ['ADV']
+    ins_name, ins_contract = get_instrument_details(app.vars['instrumentName'])
 
-            if selected_price_column:
-                bk_mc_price_script, bk_mc_price_div = create_line_graph(df, price_columns_to_plot,
-                                                                                   width=1000, height=400,
-                                                                                   colors=['#FF7F50', '#A6CEE3'])
-                bk_mc_volatility_script, bk_mc_volatility_div = create_line_graph(df, ['Volatility'],
-                                                                                  width=1000, height=250,
-                                                                                  colors=["limegreen"])
-
-            if selected_volume_column:
-                bk_mc_volume_script, bk_mc_volume_div = create_line_graph(df, volume_columns_to_plot,
-                                                                         width=1000, height=250,
-                                                                         colors=["grey", 'yellow'],
-                                                                         format=True)
-
-            ins_name, ins_contract = get_instrument_details(app.vars['ins_name'])
-
-            return render_template('graph.html', ins_name=ins_name,
-                                   ins_contract=ins_contract, bv=bokeh_version,
-                                   price_script=bk_mc_price_script, price_div=bk_mc_price_div,
-                                   volume_script=bk_mc_volume_script, volume_div=bk_mc_volume_div,
-                                   vol_script=bk_mc_volatility_script, vol_div=bk_mc_volatility_div)
-
-    return render_template('error.html', ticker=app.vars['ticker'], year=app.vars['start_year'])
+    return render_template('graph.html', ins_name=ins_name,
+                           ins_contract=ins_contract, bv=bokeh_version,
+                           price_script=bk_mc_price_script, price_div=bk_mc_price_div,
+                           volume_script=bk_mc_volume_script, volume_div=bk_mc_volume_div,
+                           vol_script=bk_mc_volatility_script, vol_div=bk_mc_volatility_div)
 
 
 @app.errorhandler(500)
 def error_handler(e):
-    return render_template('error.html', ticker=app.vars['ticker'], year=app.vars['start_year'])
+    return render_template('error.html', ticker=app.vars['instrumentCode'])
+
+
+def populate_form_data(form):
+    app.vars['startDt'] = form.start_dt.data
+    app.vars['endDt'] = form.end_dt.data
+    app.vars['instrumentCode'] = form.instrument.data
+    app.vars['instrumentName'] = get_instrument_name(split_instrument_code(app.vars['instrumentCode'])).name
+    app.vars['plotVWAP'] = form.vwap_checkbox.data
+    app.vars['plotADV'] = form.adv_checkbox.data
 
 
 if __name__ == "__main__":

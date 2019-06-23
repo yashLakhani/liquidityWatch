@@ -17,6 +17,8 @@ class Instrument(db.Model):
     from_date = db.Column(db.DateTime())
     to_date = db.Column(db.DateTime())
     exchange = db.Column(db.String(50))
+    #valid_from = db.Column(db.DateTime())
+    #valid_to = db.Column(db.DateTime())
 
     def __init__(self, code, name, refreshed_at, from_date, to_date, exchange):
         self.code = code

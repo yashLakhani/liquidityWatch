@@ -4,6 +4,7 @@ from wtforms.fields.html5 import DateField
 from wtforms.widgets import ListWidget, CheckboxInput
 from queries import get_all_instruments
 
+
 class MultiCheckboxField(SelectMultipleField):
     widget = ListWidget(prefix_label=False)
     option_widget = CheckboxInput()
