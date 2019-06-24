@@ -9,10 +9,10 @@ Liquidity Watch is a web application that will allow you to select from over 600
  - [Bokeh (Python)](http://bokeh.pydata.org/en/latest/): Charting library that integrates well into flask while displaying results in JS.
  - [Flask (Python)](http://flask.pocoo.org/): Lightweight Python web framework. 
  - [Quandl](https://www.quandl.com/): Main datasource with an easy to use API.
-   [PostgreSQL](https://www.postgresql.org/): Database used to stored reference data. 
+ - [PostgreSQL](https://www.postgresql.org/): Database used to stored reference data. 
  - [Bootstrap](http://getbootstrap.com/): A front end CSS package with easy to use components.
  - [Github](https://github.com/): A Git repository with many open sourced projects.
- - [PyCharm](https://www.jetbrains.com/pycharm/): Primary IDE used for development/
+ - [PyCharm](https://www.jetbrains.com/pycharm/): Primary IDE used for development
  
  Considerations: 
  Redis or a temporal database (e.g. KDB), React (Front End), Docker (Deployment)
