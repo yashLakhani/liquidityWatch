@@ -4,7 +4,7 @@ Liquidity Watch is a web application that will allow you to select from over 600
 
 ### Deployment
 
-Deployment instructions are coming. This will require a Postgres instance and must be configured in instance/config.py. After this loader must be run but more in depth details will be updated here soon...
+Deployment instructions are coming. This will require a Postgres instance and must be configured in instance/config.py. After this loader must be run but more in depth details will be updated here soon... Will possibly include a Dockerfile and docker-compose if time allows. 
 
 ### Technologies
 
