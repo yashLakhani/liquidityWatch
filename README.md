@@ -2,8 +2,6 @@
 
 Liquidity Watch is a web application that will allow you to select from over 600 commodity contracts and plot price, volume and volatility graphs. There are additional metrics that can be added to these graphs which currently includes Volume Weighted Average Price and Average Daily Volume, which can be useful for traders who want to analyse price and volume action. 
 
-![Annotation 2019-06-22 172908](https://user-images.githubusercontent.com/6753044/59966343-5a18c200-9513-11e9-951d-a9d5afae8d73.png)
-![64848676_461545794419313_2096851893455159296_n](https://user-images.githubusercontent.com/6753044/59965478-72ceab00-9506-11e9-8eee-26adf1a3a0c2.png)
 
 ### Technologies
 
@@ -18,3 +16,7 @@ Liquidity Watch is a web application that will allow you to select from over 600
  
  Considerations: 
  Redis or a temporal database (e.g. KDB), React (Front End), Docker (Deployment)
+
+
+![Annotation 2019-06-22 172908](https://user-images.githubusercontent.com/6753044/59966343-5a18c200-9513-11e9-951d-a9d5afae8d73.png)
+![64848676_461545794419313_2096851893455159296_n](https://user-images.githubusercontent.com/6753044/59965478-72ceab00-9506-11e9-8eee-26adf1a3a0c2.png)
