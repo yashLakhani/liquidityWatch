@@ -12,10 +12,12 @@ Liquidity Watch is a web application that will allow you to select from over 600
  - [PostgreSQL](https://www.postgresql.org/): Database used to stored reference data. 
  - [Bootstrap](http://getbootstrap.com/): A front end CSS package with easy to use components.
  - [Github](https://github.com/): A Git repository with many open sourced projects.
- - [PyCharm](https://www.jetbrains.com/pycharm/): Primary IDE used for development
+ - [PyCharm](https://www.jetbrains.com/pycharm/): Primary IDE used for development.
  
- Considerations: 
- Redis or a temporal database (e.g. KDB), React (Front End), Docker (Deployment)
+### Considerations
+ - Redis or a temporal database (e.g. KDB)
+ - React (Front End)
+ - Docker (Deployment)
 
 
 ![Annotation 2019-06-22 172908](https://user-images.githubusercontent.com/6753044/59966343-5a18c200-9513-11e9-951d-a9d5afae8d73.png)
