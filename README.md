@@ -6,6 +6,10 @@ Liquidity Watch is a web application that will allow you to select from over 600
 
 Currently having issues with Docker (and Postgres Image), therefore you will need to install Python and PostgresSQL.
 
+Start Postgres (once installed):
+```
+services start postgresql
+```
 
 From Command Line:
 ```
@@ -15,17 +19,17 @@ psql postgres
 From within Postgres Shell:
 ```
 CREATE ROLE lw_user WITH LOGIN PASSWORD '1234';
-ALTER ROLE lw_user CREATEDB
+ALTER ROLE lw_user CREATEDB;
 ```
 
 From command line:
 ```
-createdb referencedb
+createdb referencedb -U lw_user
 ```
 
 To test it was created (from command line):
 ```
-psql referencedb
+psql referencedb -U lw_user
 ```
 
 Once you have your Python environment setup you need to install the dependencies (from within application root).
