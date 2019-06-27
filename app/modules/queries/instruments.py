@@ -1,4 +1,4 @@
-from models import Instrument
+from app.models.instrument import Instrument
 
 
 def summarize_instrument(instrument):

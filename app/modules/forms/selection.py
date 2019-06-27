@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import BooleanField, SubmitField, SelectField, SelectMultipleField
 from wtforms.fields.html5 import DateField
 from wtforms.widgets import ListWidget, CheckboxInput
-from queries import get_all_instruments
+from app.modules.queries.instruments import get_all_instruments
 
 
 class MultiCheckboxField(SelectMultipleField):

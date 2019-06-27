@@ -1,20 +1,17 @@
 from flask import render_template, redirect, request
 
-from models import app
-from forms import InstrumentSelectionForm
-from graph import (bokeh_version,
-                   create_line_graph,
-                   create_candle_stick_graph,
-                   generate_volatility_graph,
-                   generate_price_graph,
-                   generate_volume_graph)
-from queries import (get_instrument_name,
-                     get_instrument_details,
-                     split_instrument_code)
-from quandl_provider import (get_best_column,
-                             fetch_market_data)
-from metric_calculator import calculate_metrics
-
+from app.models.instrument import app
+from app.modules.forms.selection import InstrumentSelectionForm
+from app.modules.render.graph import (bokeh_version,
+                                       generate_volatility_graph,
+                                       generate_price_graph,
+                                       generate_volume_graph)
+from app.modules.marketdata.quandl_provider import (get_best_column,
+                                                    fetch_market_data)
+from app.modules.calculate.metric_calculator import calculate_metrics
+from app.modules.queries.instruments import (get_instrument_name,
+                                             get_instrument_details,
+                                             split_instrument_code)
 app.secret_key = 'XOYO!'
 app.config['BOOTSTRAP_SERVE_LOCAL'] = True
 app.config['DEBUG'] = True
@@ -86,4 +83,4 @@ def populate_form_data(form):
 
 
 if __name__ == "__main__":
-    app.run("0.0.0.0", port=80, debug=True)
+    app.run("0.0.0.0", port=5000, debug=True)
