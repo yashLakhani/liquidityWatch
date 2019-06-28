@@ -15,4 +15,4 @@ setup(
 
 filename = PureWindowsPath('./data/CHRIS_metadata.csv')
 correct_path = Path(filename)
-load_instruments('CHRIS', filename)
+load_instruments('CHRIS', correct_path)
